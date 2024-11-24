@@ -48,8 +48,10 @@ void game_close()
 }
 
 // 0: top: <; 1: bottom: >
-void car_thread(bool route)
+void *car_thread(void *param)
 {
+    bool route = *(bool *)param;
+
     char car = (route) ? '>' : '<';
     uint8_t line = (route) ? 4 : 2;
 
@@ -76,6 +78,8 @@ void car_thread(bool route)
     move_cursor(line, (route) ? WIDTH : 1);
     fprintf(stdout, " ");
     fflush(stdout);
+
+    return NULL;
 }
 
 int main(int argc, char **argv)
@@ -84,8 +88,20 @@ int main(int argc, char **argv)
 
     game_init();
 
-    car_thread(0);
-    car_thread(1);
+    bool route0 = 0;
+
+    pthread_t car0;
+    pthread_create(&car0, NULL, car_thread, (void *)&route0);
+
+    usleep(10 * 1000);
+
+    bool route1 = 1;
+
+    pthread_t car1;
+    pthread_create(&car1, NULL, car_thread, (void *)&route1);
+
+    pthread_join(car0, NULL);
+    pthread_join(car1, NULL);
 
     game_close();
 }
