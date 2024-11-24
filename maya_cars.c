@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     pthread_t last;
 
     bool quit = false;
-    do
+    while (!quit)
     {
         bool route = 0;
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
             break;
         }
-    } while (!quit);
+    }
 
     pthread_join(last, NULL);
 
