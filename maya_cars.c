@@ -88,20 +88,30 @@ int main(int argc, char **argv)
 
     game_init();
 
-    bool route0 = 0;
+    pthread_t last;
 
-    pthread_t car0;
-    pthread_create(&car0, NULL, car_thread, (void *)&route0);
+    bool quit = false;
+    do
+    {
+        bool route = 0;
 
-    usleep(10 * 1000);
+        switch (fgetc(stdin))
+        {
+        case 'q':
+            quit = true;
 
-    bool route1 = 1;
+            break;
+        case 'j':
+            route = 1;
+        case 'k':
+            bool copied = route;
+            pthread_create(&last, NULL, car_thread, (void *)&copied);
 
-    pthread_t car1;
-    pthread_create(&car1, NULL, car_thread, (void *)&route1);
+            break;
+        }
+    } while (!quit);
 
-    pthread_join(car0, NULL);
-    pthread_join(car1, NULL);
+    pthread_join(last, NULL);
 
     game_close();
 }
